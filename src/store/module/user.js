@@ -1,7 +1,7 @@
 import {
   login,
-  logout,
-  getUserInfo,
+  // logout,
+  // getUserInfo,
   getMessage,
   getContentByMsgId,
   hasRead,
@@ -82,9 +82,9 @@ export default {
           password
         }).then(res => {
           const data = res.data
-          console.log(data, 'data')
+          console.log(data)
           if (data.code === 1) {
-            commit('setToken', data.token)
+            commit('setToken', data.result.token)
             resolve()
           } else {
             reject(data)
@@ -97,37 +97,41 @@ export default {
     // 退出登录
     handleLogOut ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('setToken', '')
-          commit('setAccess', [])
-          resolve()
-        }).catch(err => {
-          reject(err)
-        })
+        // logout(state.token).then(() => {
+        //   commit('setToken', '')
+        //   commit('setAccess', [])
+        //   resolve()
+        // }).catch(err => {
+        //   reject(err)
+        // })
         // 如果你的退出登录无需请求接口，则可以直接使用下面三行代码而无需使用logout调用接口
-        // commit('setToken', '')
-        // commit('setAccess', [])
-        // resolve()
+        commit('setToken', '')
+        commit('setAccess', [])
+        resolve()
       })
     },
     // 获取用户相关信息
     getUserInfo ({ state, commit }) {
+      // return new Promise((resolve, reject) => {
+      //   try {
+      //     getUserInfo(state.token).then(res => {
+      //       const data = res.data
+      //       commit('setAvatar', data.avatar)
+      //       commit('setUserName', data.name)
+      //       commit('setUserId', data.user_id)
+      //       commit('setAccess', data.access)
+      //       commit('setHasGetInfo', true)
+      //       resolve(data)
+      //     }).catch(err => {
+      //       reject(err)
+      //     })
+      //   } catch (error) {
+      //     reject(error)
+      //   }
+      // })
       return new Promise((resolve, reject) => {
-        try {
-          getUserInfo(state.token).then(res => {
-            const data = res.data
-            commit('setAvatar', data.avatar)
-            commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', data.access)
-            commit('setHasGetInfo', true)
-            resolve(data)
-          }).catch(err => {
-            reject(err)
-          })
-        } catch (error) {
-          reject(error)
-        }
+        debugger
+        resolve()
       })
     },
     // 此方法用来获取未读消息条数，接口只返回数值，不返回消息列表
