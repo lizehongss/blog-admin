@@ -49,3 +49,18 @@ export const getTreeSelectData = () => {
     method: 'get'
   })
 }
+// 上传文章
+export const postArticle = ({ title, keyword, descript, content, tag }) => {
+  const data = {
+    title,
+    keyword,
+    descript,
+    content,
+    tag
+  }
+  return axios.request({
+    url: 'article',
+    data,
+    method: 'post'
+  })
+}

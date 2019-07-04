@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import { getToken } from '@/libs/util'
+import { Message } from 'iview'
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -58,8 +59,18 @@ class HttpRequest {
     // 响应拦截
     instance.interceptors.response.use(res => {
       this.destroy(url)
-      const { data, status } = res
-      return { data, status }
+      if (res.data.code === 0) {
+        Message.error(res.data.message)
+        addErrorLog({
+          statusText: res.data.message,
+          status: res.status,
+          request: { responseURL: config.url }
+        })
+        return Promise.reject(res.data.message)
+      } else {
+        const { data, status } = res
+        return { data, status }
+      }
     }, error => {
       this.destroy(url)
       let errorInfo = error.response

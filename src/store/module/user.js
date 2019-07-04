@@ -82,7 +82,6 @@ export default {
           password
         }).then(res => {
           const data = res.data
-          console.log(data)
           if (data.code === 1) {
             commit('setToken', data.result.token)
             resolve()
@@ -116,7 +115,6 @@ export default {
         try {
           getUserInfo(state.token).then(res => {
             const data = res.data.result
-            console.log(data, 'data')
             commit('setAvatar', data.gravatar)
             commit('setUserName', data.name)
             commit('setUserId', data._id)
