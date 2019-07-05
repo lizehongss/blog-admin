@@ -64,3 +64,28 @@ export const postArticle = ({ title, keyword, descript, content, tag }) => {
     method: 'post'
   })
 }
+// 获取文章列表
+export const getArticle = (params) => {
+  return axios.request({
+    url: 'article',
+    params,
+    method: 'get'
+  })
+}
+// 获取标签Id
+export const postTag = ({ name, descript }) => {
+  const data = { name, descript }
+  return axios.request({
+    url: 'tag',
+    data,
+    method: 'post'
+  })
+}
+// 获取文章详情
+export const getArticleDetail = (id) => {
+  return axios.request({
+    url: 'article_detail',
+    params,
+    method: 'get'
+  })
+}

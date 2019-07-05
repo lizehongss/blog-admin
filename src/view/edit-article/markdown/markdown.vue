@@ -8,7 +8,7 @@
 
 <script>
 import MarkdownEditor from '_c/markdown'
-import { postArticle } from '@/api/data'
+import { postArticle, postTag } from '@/api/data'
 export default {
   name: 'markdown_page',
   components: {
@@ -20,7 +20,7 @@ export default {
     }
   },
   methods: {
-    submitArticle () {
+    async submitArticle () {
       console.log(this.content, 'content')
       let articleArray = this.content.split('<hr>')
       console.log(articleArray, 'array')
@@ -33,11 +33,19 @@ export default {
 
       console.log(articleInfoArray, 'title ')
       console.log(articleInfoArray['tag'].split('#'), 'tag')
+      let tagId = []
+      for (let item of articleInfoArray['tag'].split('#')) {
+        console.log(item, 'item')
+        await postTag({ name: item, descript: item }).then(res => {
+          console.log(res)
+          tagId.push(res.data.result[0]._id)
+        })
+      }
       postArticle({
         title: articleInfoArray['title'],
         keyword: articleInfoArray['keyword'],
         descript: articleInfoArray['descript'],
-        tag: articleInfoArray['tag'].split('#'),
+        tag: tagId,
         content: articleArray[2]
       }).then(res => {
         if (res.data.code === 1) {

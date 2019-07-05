@@ -70,6 +70,25 @@ export default [
     ]
   },
   {
+    path: '/articleList',
+    name: 'articleList',
+    meta: {
+      hideInBread: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'articleList_page',
+        name: 'articleList_page',
+        meta: {
+          icon: 'ios-hammer',
+          title: '文章列表'
+        },
+        component: () => import('@/view/article-list/tables/tables.vue')
+      }
+    ]
+  },
+  {
     path: '/editArticle',
     name: 'editArticle',
     meta: {
@@ -169,15 +188,6 @@ export default [
           title: '图片裁剪'
         },
         component: () => import('@/view/components/cropper/cropper.vue')
-      },
-      {
-        path: 'tables_page',
-        name: 'tables_page',
-        meta: {
-          icon: 'md-grid',
-          title: '多功能表格'
-        },
-        component: () => import('@/view/components/tables/tables.vue')
       },
       {
         path: 'split_pane_page',
