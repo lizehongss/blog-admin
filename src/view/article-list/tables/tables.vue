@@ -3,14 +3,14 @@
     <Card>
       <tables ref="tables"  search-place="top" v-model="tableData" :columns="columns" @on-delete="handleDelete"/>
     </Card>
-    <Models :show="showArticalDetail" :id="articleId" @close="handleCloseDetail"></Models>
+    <Models :show="showArticalDetail" v-if="showArticalDetail" :id="articleId" @close="handleCloseDetail"></Models>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
 import Models from './models'
-import { getArticle } from '@/api/data'
+import { getArticle, deleteArticle } from '@/api/data'
 
 export default {
   name: 'tables_page',
@@ -42,10 +42,17 @@ export default {
         {
           title: this.$t('article_publish'),
           key: 'publish',
+          align: 'center',
           render: (h, params) => {
-            return h('Tag', {
+            return h('Button', {
               props: {
-                color: 'primary'
+                type: 'primary',
+                size: 'small'
+              },
+              on: {
+                click: () => {
+                  this.handlePublish(params.row._id)
+                }
               }
             }, this.article_publish[params.row.publish])
           }
@@ -53,10 +60,17 @@ export default {
         {
           title: this.$t('article_state'),
           key: 'state',
+          align: 'center',
           render: (h, params) => {
-            return h('Tag', {
+            return h('Button', {
               props: {
-                color: 'primary'
+                type: 'primary',
+                size: 'small'
+              },
+              on: {
+                click: () => {
+                  this.handleState(params.row._id)
+                }
               }
             }, this.article_state[params.row.state])
           }
@@ -119,6 +133,9 @@ export default {
       this.articleId = _id
     },
     handleDeleteArticle (_id) {
+      deleteArticle(_id).then(res => {
+        this.$Message.success(res.data.message)
+      })
     },
     handleCloseDetail () {
       this.showArticalDetail = false
@@ -126,7 +143,6 @@ export default {
   },
   mounted () {
     getArticle({}).then(res => {
-      console.log(res.data.result.list)
       this.tableData = res.data.result.list
     })
   }

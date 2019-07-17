@@ -49,6 +49,7 @@ export const getTreeSelectData = () => {
     method: 'get'
   })
 }
+
 // 上传文章
 export const postArticle = ({ title, keyword, descript, content, tag }) => {
   const data = {
@@ -84,8 +85,29 @@ export const postTag = ({ name, descript }) => {
 // 获取文章详情
 export const getArticleDetail = (id) => {
   return axios.request({
-    url: 'article_detail',
-    params,
+    url: 'article_detail/' + id,
     method: 'get'
+  })
+}
+// 删除文章
+export const deleteArticle = (id) => {
+  return axios.request({
+    url: 'article/' + id,
+    method: 'delete'
+  })
+}
+// 修改文章状态
+export const patchArticle = (id, params) => {
+  return axios.request({
+    url: 'article/' + id,
+    params,
+    method: 'patch'
+  })
+}
+// 修改文章
+export const editArticle = (id) => {
+  return axios.request({
+    url: 'article/' + id,
+    method: 'put'
   })
 }

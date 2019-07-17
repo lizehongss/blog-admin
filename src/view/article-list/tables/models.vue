@@ -1,7 +1,7 @@
 <template>
     <div>
         <Drawer :closable="false" width="640" v-model="openDrawer" @on-close="handleClose">
-            <div>test</div>
+            <div class="markdown-body" v-html="articleHtml"></div>
         </Drawer>
     </div>
 </template>
@@ -21,7 +21,8 @@ export default {
   },
   data () {
     return {
-      openDrawer: this.show
+      openDrawer: this.show,
+      articleHtml: ''
     }
   },
   mounted () {
@@ -33,7 +34,7 @@ export default {
     },
     getArticleDetail () {
       getArticleDetail(this.id).then(res => {
-        console.log(res)
+        this.articleHtml = res.data.result.content
       })
     }
   },
