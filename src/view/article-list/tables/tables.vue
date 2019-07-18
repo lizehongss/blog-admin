@@ -10,7 +10,7 @@
 <script>
 import Tables from '_c/tables'
 import Models from './models'
-import { getArticle, deleteArticle } from '@/api/data'
+import { getArticle, deleteArticle, patchArticle } from '@/api/data'
 
 export default {
   name: 'tables_page',
@@ -51,7 +51,7 @@ export default {
               },
               on: {
                 click: () => {
-                  this.handlePublish(params.row._id)
+                  this.handlePublish(params.row._id, params.row.publish)
                 }
               }
             }, this.article_publish[params.row.publish])
@@ -69,7 +69,7 @@ export default {
               },
               on: {
                 click: () => {
-                  this.handleState(params.row._id)
+                  this.handleState(params.row._id, params.row.state)
                 }
               }
             }, this.article_state[params.row.state])
@@ -79,6 +79,20 @@ export default {
           title: this.$t('article_operation'),
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.handleEditArticle(params.row._id)
+                  }
+                }
+              }, this.$t('article_edit')),
               h('Button', {
                 props: {
                   type: 'text',
@@ -116,11 +130,11 @@ export default {
       articleId: '',
       article_publish: {
         1: this.$t('article_publice'),
-        2: this.$t('article_private')
+        0: this.$t('article_private')
       },
       article_state: {
         1: this.$t('article_push'),
-        2: this.$t('article_keep')
+        0: this.$t('article_keep')
       }
     }
   },
@@ -139,12 +153,37 @@ export default {
     },
     handleCloseDetail () {
       this.showArticalDetail = false
+    },
+    handlePublish (_id, publish) {
+      let params = {
+        publish: publish === 1 ? '0' : '1'
+      }
+      patchArticle(_id, params).then(res => {
+        console.log(res)
+        this.$Message.success(res.data.message)
+        this.getArticle()
+      })
+    },
+    handleState (_id, state) {
+      let params = {
+        state: state === 1 ? '0' : '1'
+      }
+      patchArticle(_id, params).then(res => {
+        this.$Message.success(res.data.message)
+        this.getArticle()
+      })
+    },
+    getArticle () {
+      getArticle({}).then(res => {
+        this.tableData = res.data.result.list
+      })
+    },
+    handleEditArticle (_id) {
+      this.$router.push({ name: 'markdown_page', params: { id: _id } })
     }
   },
   mounted () {
-    getArticle({}).then(res => {
-      this.tableData = res.data.result.list
-    })
+    this.getArticle()
   }
 }
 </script>

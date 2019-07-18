@@ -4,7 +4,7 @@ export default {
   articleList: '文章列表',
   editArticle: '文章编辑',
   articleList_page: '文章列表',
-  markdown_page: 'Markdown编辑器',
+  markdown_page: 'Markdown',
   editor_page: '富文本编辑器',
   //
   // 文章列表
@@ -22,10 +22,21 @@ export default {
   article_keep: '草稿',
   article_operation: '文章操作',
   article_detail: '详情',
+  article_edit: '编辑',
   article_delete: '删除',
+  //
+  articleForm_title: '文章标题:',
+  articleForm_keyword: '关键词:',
+  articleForm_descript: '描述:',
+  articleForm_tag: '标签:',
+  articleForm_content: '文章内容',
+  ruleValidate: '不能为空',
+  faileValid: '请填写必填项',
   //
   oathText: '存入草稿箱',
   submitText: '提交文章',
+  saveEdit: '保存修改',
+  //
   components: '组件',
   count_to_page: '数字渐变',
   tables_page: '多功能表格',

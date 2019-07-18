@@ -1,62 +1,159 @@
 <template>
   <div>
-    <markdown-editor v-model="content"/>
-    <Button type="primary" @click="submitArticle">{{$t('submitText')}}</Button>
+    <Form ref="articleForm" :model="articleForm"  label-position="left" :rules="ruleValidate">
+      <FormItem :label="$t('articleForm_title')" prop="title">
+        <Input type="text" v-model="articleForm.title"/>
+      </FormItem>
+      <FormItem :label="$t('articleForm_keyword')" prop="keyword">
+        <Input type="text" v-model="articleForm.keyword"/>
+      </FormItem>
+      <FormItem :label="$t('articleForm_descript')" prop="descript">
+        <Input type="text" v-model="articleForm.descript"/>
+      </FormItem>
+      <FormItem :label="$t('articleForm_tag')">
+        <span class="tags">
+          <Tag
+          v-for="tag in articleForm.tag"
+          closable
+          :key="tag"
+          color ="success"
+          @on-close="closeTag(tag)"
+          >{{tag}}</Tag>
+        </span>
+        <Input v-if="inputVisible"
+          class="input-new-tag"
+          v-model="tagInput"
+          @on-enter='addTag'
+          @on-blur='addTag'
+        />
+        <Button class="button-new-tag" v-else size="small" @click="inputVisible = true">+</Button>
+      </FormItem>
+      <FormItem :label="$t('articleForm_content')" prop="content">
+        <markdown-editor v-model="articleForm.content"/>
+      </FormItem>
+    </Form>
+    <Button type="primary" @click="saveEditArticle" v-if="this.articleId" style="marginRight: 5em">{{$t('saveEdit')}}</Button>
+    <Button type="primary" @click="submitArticle" v-else style="marginRight: 5em" >{{$t('submitText')}}</Button>
     <Button type="primary" @click="oathArticle">{{$t('oathText')}}</Button>
   </div>
 </template>
 
 <script>
 import MarkdownEditor from '_c/markdown'
-import { postArticle, postTag } from '@/api/data'
+import { postArticle, postTag, getArticleDetail, editArticle } from '@/api/data'
 export default {
   name: 'markdown_page',
   components: {
     MarkdownEditor
   },
+  // beforeRouteLeave (to, from, next) {
+  //   // 导航离开该组件的对应路由时调用
+  //   // 可以访问组件实例 `this`
+  //   this.$destroy('markdown_page')
+  //   next()
+  // },
   data () {
     return {
-      content: ''
+      ruleValidate: {
+        title: [
+          { required: true, message: this.$t('ruleValidate'), trigger: 'blur' }
+        ],
+        keyword: [
+          { required: true, message: this.$t('ruleValidate'), trigger: 'blur' }
+        ],
+        descript: [
+          { required: true, message: this.$t('ruleValidate'), trigger: 'blur' }
+        ],
+        // tag: [
+        //   { required: true, message: this.$t('ruleValidate'), trigger: 'change', type: 'array' }
+        // ],
+        content: [
+          { required: true, message: this.$t('ruleValidate'), trigger: 'change' }
+        ]
+
+      },
+      content: '',
+      articleId: '',
+      inputVisible: false,
+      tagInput: '',
+      articleForm: {
+        title: '',
+        keyword: '',
+        descript: '',
+        tag: [],
+        content: ''
+      }
+
+    }
+  },
+  mounted () {
+    this.articleId = this.$route.params.id
+    if (this.articleId) {
+      getArticleDetail(this.articleId).then(res => {
+        console.log(res.data.result)
+        for (let item in this.articleForm) {
+        // this.articleForm.title = res.data.result.title
+          if (item === 'tag') {
+            this.articleForm[item] = res.data.result[item].map(res => {
+              return res.name
+            })
+          } else {
+            this.articleForm[item] = res.data.result[item]
+          }
+        }
+        console.log(item, 'item')
+      })
     }
   },
   methods: {
-    async submitArticle () {
-      console.log(this.content, 'content')
-      let articleArray = this.content.split('<hr>')
-      console.log(articleArray, 'array')
-      let articleInfo = articleArray[1].replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/\n/g, '').split('<br>')
-      let articleInfoArray = []
-      for (let item of articleInfo) {
-        let infoMeta = item.split(':')
-        articleInfoArray[infoMeta[0]] = infoMeta[1]
+    closeTag (tag) {
+      this.articleForm.tag.splice(this.articleForm.tag.indexOf(tag), 1)
+    },
+    addTag () {
+      let inputValue = this.tagInput
+      if (inputValue) {
+        this.articleForm.tag.push(inputValue)
       }
-
-      console.log(articleInfoArray, 'title ')
-      console.log(articleInfoArray['tag'].split('#'), 'tag')
+      this.inputVisible = false
+      this.tagInput = ''
+    },
+    submitArticle () {
+      this.$refs['articleForm'].validate((valid) => {
+        if (valid) {
+          this.getTagId()
+          postArticle(this.articleForm).then(res => {
+            this.$Message.success(res.data.message)
+          })
+          this.$router.push({ name: 'articleList_page' })
+        } else {
+          this.$Message.error(this.$t('faileValid'))
+        }
+      })
+    },
+    async getTagId () {
       let tagId = []
-      for (let item of articleInfoArray['tag'].split('#')) {
-        console.log(item, 'item')
+      for (let item of this.articleForm.tag) {
         await postTag({ name: item, descript: item }).then(res => {
-          console.log(res)
           tagId.push(res.data.result[0]._id)
         })
       }
-      postArticle({
-        title: articleInfoArray['title'],
-        keyword: articleInfoArray['keyword'],
-        descript: articleInfoArray['descript'],
-        tag: tagId,
-        content: articleArray[2]
-      }).then(res => {
-        if (res.data.code === 1) {
-          this.$Message.success(res.data.message)
-        }
-      }).catch(res => {
-        console.log(res)
-      })
+      this.articleForm.tag = tagId
     },
     oathArticle () {
 
+    },
+    saveEditArticle () {
+      this.$refs['articleForm'].validate((valid) => {
+        if (valid) {
+          this.getTagId()
+          editArticle(this.articleId, this.articleForm).then(res => {
+            this.$Message.success(res.data.message)
+          })
+          this.$router.push({ name: 'articleList_page' })
+        } else {
+          this.$Message.error(this.$t('faileValid'))
+        }
+      })
     }
   }
 }

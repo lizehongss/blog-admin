@@ -64,6 +64,7 @@ export default {
 
 <style lang="less">
 .markdown-wrapper{
+  margin-top: 3em;
   .editor-toolbar.fullscreen{
     z-index: 9999;
   }

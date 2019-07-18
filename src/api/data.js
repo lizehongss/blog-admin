@@ -97,17 +97,18 @@ export const deleteArticle = (id) => {
   })
 }
 // 修改文章状态
-export const patchArticle = (id, params) => {
+export const patchArticle = (id, data) => {
   return axios.request({
     url: 'article/' + id,
-    params,
+    data,
     method: 'patch'
   })
 }
 // 修改文章
-export const editArticle = (id) => {
+export const editArticle = (id, data) => {
   return axios.request({
     url: 'article/' + id,
-    method: 'put'
+    method: 'put',
+    data
   })
 }

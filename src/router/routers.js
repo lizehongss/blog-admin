@@ -73,7 +73,8 @@ export default [
     path: '/articleList',
     name: 'articleList',
     meta: {
-      hideInBread: true
+      hideInBread: true,
+      notCache: true
     },
     component: Main,
     children: [
@@ -82,7 +83,8 @@ export default [
         name: 'articleList_page',
         meta: {
           icon: 'ios-hammer',
-          title: '文章列表'
+          title: '文章列表',
+          notCache: true
         },
         component: () => import('@/view/article-list/tables/tables.vue')
       }
@@ -105,16 +107,16 @@ export default [
           title: 'Markdown编辑器'
         },
         component: () => import('@/view/edit-article/markdown/markdown.vue')
-      },
-      {
-        path: 'editor_page',
-        name: 'editor_page',
-        meta: {
-          icon: 'ios-create',
-          title: '富文本编辑器'
-        },
-        component: () => import('@/view/edit-article/editor/editor.vue')
       }
+      // {
+      //   path: 'editor_page',
+      //   name: 'editor_page',
+      //   meta: {
+      //     icon: 'ios-create',
+      //     title: '富文本编辑器'
+      //   },
+      //   component: () => import('@/view/edit-article/editor/editor.vue')
+      // }
     ]
   },
   {
