@@ -58,6 +58,12 @@ export default {
     this.addEvents()
     let content = localStorage.markdownContent
     if (content) this.editor.value(content)
+  },
+  watch: {
+    value (val) {
+      console.log(val, 'watchVal')
+      this.editor.markdown(val)
+    }
   }
 }
 </script>
