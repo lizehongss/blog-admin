@@ -35,7 +35,7 @@ export default {
       this.editor.codemirror.on('change', () => {
         let value = this.editor.value()
         if (this.localCache) localStorage.markdownContent = value
-        value = this.editor.markdown(value)
+        // value = this.editor.markdown(value)
         this.$emit('input', value)
         this.$emit('on-change', value)
       })
@@ -61,8 +61,7 @@ export default {
   },
   watch: {
     value (val) {
-      console.log(val, 'watchVal')
-      this.editor.markdown(val)
+      this.editor.value(val)
     }
   }
 }

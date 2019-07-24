@@ -93,20 +93,20 @@ export default {
                   }
                 }
               }, this.$t('article_edit')),
-              h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.showArticleDetail(params.row._id)
-                  }
-                }
-              }, this.$t('article_detail')),
+              // h('Button', {
+              //   props: {
+              //     type: 'text',
+              //     size: 'small'
+              //   },
+              //   style: {
+              //     marginRight: '5px'
+              //   },
+              //   on: {
+              //     click: () => {
+              //       this.showArticleDetail(params.row._id)
+              //     }
+              //   }
+              // }, this.$t('article_detail')),
               h('Button', {
                 props: {
                   type: 'text',
@@ -140,7 +140,6 @@ export default {
   },
   methods: {
     handleDelete (params) {
-      console.log(params)
     },
     showArticleDetail (_id) {
       this.showArticalDetail = true
@@ -149,6 +148,7 @@ export default {
     handleDeleteArticle (_id) {
       deleteArticle(_id).then(res => {
         this.$Message.success(res.data.message)
+        this.getArticle()
       })
     },
     handleCloseDetail () {
@@ -159,7 +159,6 @@ export default {
         publish: publish === 1 ? '0' : '1'
       }
       patchArticle(_id, params).then(res => {
-        console.log(res)
         this.$Message.success(res.data.message)
         this.getArticle()
       })

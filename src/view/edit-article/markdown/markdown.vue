@@ -32,8 +32,8 @@
         <markdown-editor v-model="articleForm.content"/>
       </FormItem>
     </Form>
-    <Button type="primary" @click="saveEditArticle" v-if="this.articleId" style="marginRight: 5em">{{$t('saveEdit')}}</Button>
-    <Button type="primary" @click="submitArticle" v-else style="marginRight: 5em" >{{$t('submitText')}}</Button>
+    <Button type="primary" @click="submitArticle('edit')" v-if="this.articleId" style="marginRight: 5em">{{$t('saveEdit')}}</Button>
+    <Button type="primary" @click="submitArticle('save')" v-else style="marginRight: 5em" >{{$t('submitText')}}</Button>
     <Button type="primary" @click="oathArticle">{{$t('oathText')}}</Button>
   </div>
 </template>
@@ -82,15 +82,14 @@ export default {
         descript: '',
         tag: [],
         content: ''
-      }
-
+      },
+      tagId: []
     }
   },
   mounted () {
     this.articleId = this.$route.params.id
     if (this.articleId) {
       getArticleDetail(this.articleId).then(res => {
-        console.log(res.data.result)
         for (let item in this.articleForm) {
         // this.articleForm.title = res.data.result.title
           if (item === 'tag') {
@@ -116,43 +115,46 @@ export default {
       this.inputVisible = false
       this.tagInput = ''
     },
-    submitArticle () {
+    submitArticle (sign) {
       this.$refs['articleForm'].validate((valid) => {
         if (valid) {
-          this.getTagId()
-          postArticle(this.articleForm).then(res => {
-            this.$Message.success(res.data.message)
-          })
+          if (sign === 'save') {
+            this.postArticle()
+          } else {
+            this.editArticle()
+          }
+          localStorage.markdownContent = ''
           this.$router.push({ name: 'articleList_page' })
         } else {
           this.$Message.error(this.$t('faileValid'))
         }
       })
     },
-    async getTagId () {
-      let tagId = []
-      for (let item of this.articleForm.tag) {
-        await postTag({ name: item, descript: item }).then(res => {
-          tagId.push(res.data.result[0]._id)
-        })
-      }
-      this.articleForm.tag = tagId
+    postArticle () {
+      this.articleForm.tag = this.tagId
+      postArticle(this.articleForm).then(res => {
+        this.$Message.success(res.data.message)
+      })
+    },
+    editArticle () {
+      this.articleForm.tag = this.tagId
+      editArticle(this.articleId, this.articleForm).then(res => {
+        this.$Message.success(res.data.message)
+      })
     },
     oathArticle () {
 
-    },
-    saveEditArticle () {
-      this.$refs['articleForm'].validate((valid) => {
-        if (valid) {
-          this.getTagId()
-          editArticle(this.articleId, this.articleForm).then(res => {
-            this.$Message.success(res.data.message)
-          })
-          this.$router.push({ name: 'articleList_page' })
-        } else {
-          this.$Message.error(this.$t('faileValid'))
-        }
-      })
+    }
+  },
+  watch: {
+    async 'articleForm.tag' (val) {
+      if (val === this.tagId) return
+      this.tagId = []
+      for (let item of val) {
+        await postTag({ name: item, descript: item }).then(res => {
+          this.tagId.push(res.data.result[0]._id)
+        })
+      }
     }
   }
 }
