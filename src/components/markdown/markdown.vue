@@ -60,8 +60,8 @@ export default {
     if (content) this.editor.value(content)
   },
   watch: {
-    value (val) {
-      this.editor.value(val)
+    value (newVal, oldVal) {
+      if (Math.abs(newVal.length - oldVal.length) > 1) this.editor.value(newVal)
     }
   }
 }
